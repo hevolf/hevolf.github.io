@@ -25,8 +25,8 @@
     version: '7.5.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
-    copycode: {"enable":true,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":true,"show_result":true,"style":"default"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: false,
     mediumzoom: false,
@@ -286,6 +286,10 @@
       <i class="fa fa-rss"></i>RSS
     </a>
   </div>
+  <div class="chat motion-element"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
         <a href="https://github.com/hevolf" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hevolf" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
@@ -428,11 +432,11 @@
 <script>
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
     var gitalk = new Gitalk({
-      clientID: '',
-      clientSecret: '',
-      repo: 'itheone_issues',
-      owner: 'https://github.com/hevolf/',
-      admin: [''],
+      clientID: '0672eb3ee58faee4935d',
+      clientSecret: '2de10f83bc44b7d86db607b2a3db41d6b845d59f',
+      repo: 'https://github.com/hevolf/itheone_gitalk',
+      owner: 'https://github.com/hevolf',
+      admin: ['hevolf'],
       id: '3be7aa98d992907175cbd79c194399f2',
         language: 'zh-CN',
       distractionFreeMode: 'true'
