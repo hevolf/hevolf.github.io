@@ -215,10 +215,10 @@
       <div class="post-body">
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-              暂无标签
+              目前共计 2 个标签
             </div>
             <div class="tag-cloud-tags">
-              
+              <a href="/tags/SpringCloud/" style="font-size: 13px; color: #008577">SpringCloud</a> <a href="/tags/hexo/" style="font-size: 13px; color: #008577">hexo</a>
             </div>
           </div>
         
@@ -304,6 +304,12 @@
           <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -400,23 +406,16 @@
         .then(({ results }) => {
           if (results.length > 0) {
             var counter = results[0];
+              leancloudSelector(url).innerText = counter.time + 1;
             Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
               .then(response => response.json())
-              .then(() => {
-                leancloudSelector(url).innerText = counter.time + 1;
-              })
               .catch(error => {
                 console.log('Failed to save visitor count', error);
               })
           } else {
-              Counter('post', '/classes/Counter', { title: title, url: url, time: 1 })
-                .then(response => response.json())
-                .then(() => {
-                  leancloudSelector(url).innerText = 1;
-                })
-                .catch(error => {
-                  console.log('Failed to create', error);
-                });
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
           }
         })
         .catch(error => {
@@ -546,7 +545,7 @@
       owner: 'hevolf',
       admin: ['hevolf'],
       id: 'f47af1d1eda4d807b02bba32be15120b',
-        language: '',
+        language: 'zh-CN',
       distractionFreeMode: 'true'
     });
     gitalk.render('gitalk-container');

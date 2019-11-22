@@ -266,7 +266,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Haifeng Cao"
-      src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1574348440628&di=36c89790bc3a6f6a2686e2641688cc6a&imgtype=0&src=http%3A%2F%2Fpic2.zhimg.com%2Fv2-a11d47bc3401edaf671f202cd6365a07_1200x500.jpg">
+      src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">Haifeng Cao</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -380,23 +380,16 @@
         .then(({ results }) => {
           if (results.length > 0) {
             var counter = results[0];
+              leancloudSelector(url).innerText = counter.time + 1;
             Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
               .then(response => response.json())
-              .then(() => {
-                leancloudSelector(url).innerText = counter.time + 1;
-              })
               .catch(error => {
                 console.log('Failed to save visitor count', error);
               })
           } else {
-              Counter('post', '/classes/Counter', { title: title, url: url, time: 1 })
-                .then(response => response.json())
-                .then(() => {
-                  leancloudSelector(url).innerText = 1;
-                })
-                .catch(error => {
-                  console.log('Failed to create', error);
-                });
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
           }
         })
         .catch(error => {
