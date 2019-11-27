@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="itheone" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: true,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"default"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="[toc]JVM一、内存结构 即JVM运行时数据区： 线程私有：程序计数器、虚拟机栈、本地方法栈 线程共享：堆、方法区 1. 程序计数器程序计数器：指向当前线程正在执行的字节码指令的地址（行号）(唯一不会OOM) 为什么需要程序计数器？ java线程是多线程的，意味着需要线程切换 确保==多线程情况下的程序正常执行==">
+<meta name="keywords" content="G1,CMS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.caohaifeng.site&#x2F;2019&#x2F;11&#x2F;27&#x2F;JVM&#x2F;index.html">
+<meta property="og:site_name" content="itheone">
+<meta property="og:description" content="[toc]JVM一、内存结构 即JVM运行时数据区： 线程私有：程序计数器、虚拟机栈、本地方法栈 线程共享：堆、方法区 1. 程序计数器程序计数器：指向当前线程正在执行的字节码指令的地址（行号）(唯一不会OOM) 为什么需要程序计数器？ java线程是多线程的，意味着需要线程切换 确保==多线程情况下的程序正常执行==">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;%E5%9B%BE%E7%89%871.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;20170329213804491.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%94%B6%E9%9B%86.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%94%B6%E9%9B%86.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;CMS%E6%94%B6%E9%9B%86.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;G1%E6%94%B6%E9%9B%86.png">
+<meta property="og:updated_time" content="2019-11-27T15:40:37.493Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.png">
+
+<link rel="canonical" href="https://www.caohaifeng.site/2019/11/27/JVM/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>JVM | itheone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">itheone</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">H</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-fw fa-heartbeat"></i>公益 404</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+
+
+  
+  
+  
+    <div class="bottom-divider">
+      <style>
+        .bottom-divider {
+          display: table;
+          padding-bottom: 10px;
+          margin-bottom: 50px;
+          width: 100%;
+          border-bottom: 1px solid #eee;
+        }
+      </style>
+      <div class="post-nav-next post-nav-item">
+        
+          <a href="/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" rel="next" title="搭建hexo博客">
+            <i class="fa fa-chevron-left"></i> 搭建hexo博客
+          </a>
+        
+      </div>
+
+      <span class="post-nav-divider"></span>
+
+      <div class="post-nav-prev post-nav-item">
+        
+      </div>
+    </div>
+  
+
+  
+  
+  
+  
+    
+  
+    <link itemprop="mainEntityOfPage" href="https://www.caohaifeng.site/2019/11/27/JVM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Haifeng Cao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="itheone">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM
+        </h1>
+
+        <div class="post-meta">
+
+			
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-27 10:51:24 / 修改时间：23:40:37" itemprop="dateCreated datePublished" datetime="2019-11-27T10:51:24+08:00">2019-11-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/11/27/JVM/" class="post-meta-item leancloud_visitors" data-flag-title="JVM" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/11/27/JVM/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/27/JVM/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>[toc]</p><h1 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h1><h2 id="一、内存结构"><a href="#一、内存结构" class="headerlink" title="一、内存结构"></a>一、内存结构</h2><blockquote>
+<p>即JVM运行时数据区：</p>
+<p>线程私有：程序计数器、虚拟机栈、本地方法栈</p>
+<p>线程共享：堆、方法区</p>
+</blockquote><p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.png" alt></p><p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/%E5%9B%BE%E7%89%871.png" alt></p><h3 id="1-程序计数器"><a href="#1-程序计数器" class="headerlink" title="1. 程序计数器"></a>1. 程序计数器</h3><p><strong>程序计数器</strong>：指向当前线程正在执行的字节码指令的地址（行号）(唯一不会OOM)</p><ul>
+<li>为什么需要程序计数器？<ul>
+<li>java线程是多线程的，意味着需要线程切换</li>
+<li>确保==多线程情况下的程序正常执行==</li>
+</ul>
+</li>
+</ul><a id="more"></a>
+
+
+
+
+
+<h3 id="2-虚拟机栈-java栈"><a href="#2-虚拟机栈-java栈" class="headerlink" title="2. 虚拟机栈 / java栈"></a>2. 虚拟机栈 / java栈</h3><p><strong>栈(Stack)</strong>：数据结构，入栈、出栈；特点：先进先出（FIFO）</p>
+<p><strong>虚拟机栈</strong>:（==单个栈大小设置  -Xss 1M== ) 存储当前线程运行方法所需的数据、指令、返回地址</p>
+<p><strong>栈帧</strong>：每个方法在执行的同时都会创建一个栈帧。栈帧还可以划分</p>
+<ul>
+<li><p>局部变量表</p>
+</li>
+<li><p>操作数栈</p>
+</li>
+<li><p>动态链接</p>
+</li>
+<li><p>返回地址</p>
+</li>
+</ul>
+<p>常见报错：<code>java.lang.StackOverflowError</code></p>
+<p>原因：一般是因为程序内存在死递归超过栈深度（线程过多可能会OOM，每个栈大小加起来超过机器限制）</p>
+<h3 id="3-本地方法栈"><a href="#3-本地方法栈" class="headerlink" title="3. 本地方法栈"></a>3. 本地方法栈</h3><p><strong>本地方法栈</strong>：保存的是native方法的信息，当一个JVM创建的线程调用native方法后，JVM不再为其在虚拟机栈中创建栈帧，JVM只是简单地动态链接并直接调用native方法</p>
+<p>虚拟机规范无强制规定，各版本虚拟机自由实现</p>
+<p>HotSpot直接把本地方法栈和虚拟机栈合二为一</p>
+<h3 id="4-方法区（JDK-V1-7-永久代、JDK-V1-8-元空间）"><a href="#4-方法区（JDK-V1-7-永久代、JDK-V1-8-元空间）" class="headerlink" title="4. 方法区（JDK_V1.7 永久代、JDK_V1.8 元空间）"></a>4. 方法区（JDK_V1.7 永久代、JDK_V1.8 元空间）</h3><blockquote>
+<p>JDK1.7<br>    方法区又叫永久代</p>
+<p>JDK1.8<br>    去永久代：使用元空间(空间大小只受制于机器的内存)替代永久代</p>
+<p>​    指非堆区（方法区/永久代）初始化内存分配大小 ：<br>​        永久代参数    -XX:PermSize；-XX:MaxPermSize =100M   超过100M OOM（）<br>​        元空间参数    -XX:MetaspaceSize； -XX:MaxMetaspaceSize </p>
+</blockquote>
+<p> 元空间替换永久代，why？</p>
+<p>​        永久代来存储类信息、常量、静态变量等数据不是个好主意, 很容易遇到<strong>内存溢出</strong>的问题。<br>​        对永久代进行调优是很困难的,同时<strong>将元空间与堆的垃圾回收进行了隔离，避免永久代引发的Full GC和OOM</strong>等问题；</p>
+<p>方法区：JDK_V1.7以前叫永久代；JDK_V1.8叫元空间</p>
+<ul>
+<li>类信息：字节码相关信息</li>
+<li>常量（final）：字符串常量，基本数据类型的值，final的值（类相关）</li>
+<li>静态变量（static）：静态变量（类相关）</li>
+<li>即时编译期编译后的代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span></span>&#123;</span><br><span class="line">    <span class="comment">//成员变量，static类变量等</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> i1 = <span class="number">1</span>;					<span class="comment">// i1存储在方法区中，1存储在方法区中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> i2 = <span class="number">2</span>;			<span class="comment">// i2存储在方法区中，2存储在方法区中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> i3 = <span class="number">3</span>;			<span class="comment">// i3存储在方法区中，3存储在方法区中</span></span><br><span class="line">    <span class="keyword">public</span> String s1 = <span class="string">"test1"</span>;			<span class="comment">// s1存储在方法区中，test1存储在方法区中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String s2 = <span class="string">"test2"</span>;	<span class="comment">// s2存储在方法区中，test2存储在方法区中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> String s3 = <span class="string">"test3"</span>;	<span class="comment">// s3存储在方法区中，test3存储在方法区中</span></span><br><span class="line">    <span class="comment">// 以上数据在类加载后会存到运行时常量池</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> Object a = <span class="keyword">new</span> A();			<span class="comment">// a存在方法区中，new A()存在堆中</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//局部变量</span></span><br><span class="line">        <span class="keyword">int</span> i4 = <span class="number">4</span>;						<span class="comment">// i4存储在栈中，4存储在栈中</span></span><br><span class="line">        String s4 = <span class="string">"test4"</span>;			<span class="comment">// s4存储在栈中，test4存储在堆中</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 类加载后，class文件的常量池会放入运行时常量池(符号引用+字面量)，即从方法区-》堆中运行时常量池</span></span><br><span class="line">    <span class="comment">// i1 - 1，i2 - 2等均会放入运行时常量池；JDK1.6及以前在方法区里，JDK1.7和1.8在堆里</span></span><br><span class="line">    <span class="comment">// 无需太纠结，看总结即可：方法区存放类相关信息，类加载后，相关常量会放到运行时常量池，不通版本运行时常量池位置不一样，1.6在方法区/永久代；1.7和1.8在堆区，同时1.8移除方法区改为元空间</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：==方法区存放类相关信息，类加载后，相关常量会放到运行时常量池，不通版本运行时常量池位置不一样，1.6在方法区/永久代；1.7和1.8在堆区，同时1.8移除方法区改为元空间==</p>
+<h3 id="5-Java堆"><a href="#5-Java堆" class="headerlink" title="5. Java堆"></a>5. Java堆</h3><p><strong>成员变量</strong>：对象</p>
+<p><strong>参数配置</strong>：</p>
+<ul>
+<li><p>-Xms (start): -Xms256m</p>
+</li>
+<li><p>-Xmx (max): </p>
+</li>
+<li><p>-Xmn (new): </p>
+<p>##通常会将 -Xms 和 -Xmx两个参数的配置相同的值，<br>其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，<br>从而提高性能。 </p>
+</li>
+</ul>
+<p>==总结==：</p>
+<p>​        <strong>栈</strong>：以栈帧的方式存储方法调用的过程，并存储<strong>方法调用过程</strong>中<strong>基本数据类型</strong>的变量（int、short、long、byte、float、double、boolean、char等）以及<strong>对象的引用变量</strong>，其内存分配在栈上，变量出了作用域就会自动释放；（stackoverflow,OOM）<br>​        <strong>堆</strong>：堆内存用来<strong>存储Java中的对象</strong>。无论是成员变量，局部变量，还是类变量，它们<strong>指向的对象</strong>都存储在堆内存中</p>
+<h3 id="6-运行时常量池"><a href="#6-运行时常量池" class="headerlink" title="6. 运行时常量池"></a>6. 运行时常量池</h3><blockquote>
+<p>JDK1.6<br>    运行时常量池在<strong>方法区</strong>中<br>JDK1.7<br>     运行时常量池在<strong>堆</strong>中<br>JDK1.8<br>    运行时常量池在<strong>堆</strong>中</p>
+</blockquote>
+<p><strong>Class 文件中的常量池</strong>： Class 文件中的常量池（编译器生成的各种字面量和符号引用）会在<strong>类加载后</strong>被放入运行时常量池。</p>
+<ul>
+<li>符号引用：<code>String a = &quot;test&quot;</code>; a为符号引用</li>
+<li>字面量:<code>String a = &quot;test&quot;</code>；“test”为字面量</li>
+</ul>
+<p><strong>运行时常量池</strong>： 类加载后的常量池</p>
+<p><strong>常量池</strong>：StringTable，本质上就是个Hashtable ，包含的内容如下</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/20170329213804491.png" alt></p>
+<h3 id="7-直接内存"><a href="#7-直接内存" class="headerlink" title="7. 直接内存"></a>7. 直接内存</h3><p>本地内存的一部分划分给jvm直接引用（可看做缓存）；大小默认与堆一样</p>
+<h3 id="8-常用命令"><a href="#8-常用命令" class="headerlink" title="8. 常用命令"></a>8. 常用命令</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 反编译</span></span><br><span class="line">javap -v a.class &gt; a.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="二、-JVM中的对象"><a href="#二、-JVM中的对象" class="headerlink" title="二、 JVM中的对象"></a>二、 JVM中的对象</h2><h3 id="1-对象的分配"><a href="#1-对象的分配" class="headerlink" title="1. 对象的分配"></a>1. 对象的分配</h3><blockquote>
+<p>虚拟机遇到一条 new 指令时：根据 new 的参数是否能在常量池中定位到一个类的符号引用,如果没有，说明还未定义该类，抛出 ClassNotFoundException；</p>
+</blockquote>
+<h4 id="1-1-检查加载"><a href="#1-1-检查加载" class="headerlink" title="1.1 检查加载"></a>1.1 检查加载</h4><p>先执行相应的类加载过程。如果没有，则进行类加载</p>
+<h4 id="1-2-分配内存"><a href="#1-2-分配内存" class="headerlink" title="1.2 分配内存"></a>1.2 分配内存</h4><p>根据方法区的信息确定为该类分配的内存空间大小</p>
+<p><strong>指针碰撞 (java堆内存空间规整的情况下使用)</strong>：</p>
+<p>​        为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。 </p>
+<p>​        如果 Java 堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，那所分配内存就仅仅是把那个指针向空闲空间那边挪动一段与对象大小相等的距离，这种分配方式称为“指针碰撞”</p>
+<p><strong>空闲列表 (java堆空间不规整的情况下使用)</strong>：</p>
+<p>​        如果 Java 堆中的内存并不是规整的，已使用的内存和空闲的内存相互交错，那就没有办法简单地进行指针碰撞了，虚拟机就必须维护 一个列表，记录上哪些内存块是可用的，在分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的记录，这种 分配方式称为“空闲列表”。 </p>
+<p>​        选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定。</p>
+<p><strong>分配内存并发安全问题：</strong></p>
+<p>​        除如何划分可用空间之外，还有另外一个需要考虑的问题是对象创建在虚拟机中是非常频繁的行为，即使是仅仅修改一个指针所指向 的位置，在并发情况下也并不是线程安全的，可能出现正在给对象 A 分配内存，指针还没来得及修改，对象 B 又同时使用了原来的指 针来分配内存的情况。（对指针的分配需要保证并发安全）</p>
+<p>​        解决方案：</p>
+<ul>
+<li><p>CAS机制：对分配内存空间的动作进行同步处理——实际上虚拟机采用 CAS 配上失败重试的方式保证更新操作 的原子性；</p>
+</li>
+<li><p>分配缓冲：（本地线程分配缓冲：TLAB）把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在 Java 堆中预先分配一小块私有内存，也就是本地线程 分配缓冲（ThreadLocalAllocationBuffer,<strong>TLAB</strong>），如果设置了虚拟机参数<br> <code>-XX:+UseTLAB</code>，在线程初始化时，同时也会申请一块指定大小 的内存，只给当前线程使用，这样每个线程都单独拥有一个 Buffer，如果需要分配内存，就在自己的 Buffer 上分配，这样就不存在竞 争的情况，可以大大提升分配效率，当 Buffer 容量不够的时候，再重新从 Eden 区域申请一块继续使用。 （==线程初始化，分配一个内存块Buffer，对象从此Buffer上分配内存==；不直接从堆上分配内存给对象）</p>
+<p>TLAB 的目的是在为新对象分配内存空间时，让每个 Java 应用线程能在使用自己专属的分配指针来分配空间 （Eden 区，默认 Eden 的 1%）， 减少同步开销。</p>
+<p>TLAB 只是让每个线程有私有的分配指针，但底下存对象的内存空间还是给所有线程访问的，只是其它线程无法在这个区域分配而已（==其他线程能访问，但无权分配==）。 当一个 TLAB 用满（分配指针 top 撞上分配极限 end 了），就新申请一个 TLAB。 </p>
+</li>
+</ul>
+<h4 id="1-3-内存空间初始化"><a href="#1-3-内存空间初始化" class="headerlink" title="1.3 内存空间初始化"></a>1.3 内存空间初始化</h4><p>（注意不是构造方法）内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值(如 int 值为 0，boolean 值为 false 等等)。这 一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。 </p>
+<h4 id="1-4-设置"><a href="#1-4-设置" class="headerlink" title="1.4 设置"></a>1.4 设置</h4><p>接下来，虚拟机要对对象进行必要的设置，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。这些信息存放在对象的对象头之中。</p>
+<h4 id="1-5-对象初始化"><a href="#1-5-对象初始化" class="headerlink" title="1.5 对象初始化"></a>1.5 对象初始化</h4><p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚刚开始，所有的字段都还为零值。所以，一般来说，执行 new 指令之后会接着把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完 全产生出来。</p>
+<h3 id="2-对象的内存布局"><a href="#2-对象的内存布局" class="headerlink" title="2. 对象的内存布局"></a>2. 对象的内存布局</h3><p><strong>对象头（Header）</strong>：<br>        对象头包括两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码（HashCode）、GC 分代年龄、锁状态标志、线程持有的 锁、偏向线程 ID、偏向时间戳等。<br>        对象头的另外一部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。 </p>
+<p><strong>对象的实例数据（InstanceData）</strong>：</p>
+<p><strong>对齐填充（Padding）</strong>：<br>        对齐填充并不是必然存在的，也没有特别的含义，它仅仅起着占位符的作用。由于 HotSpotVM 的自动内存管理系统要求对对 象的大小必须是 8 字节的整数倍。对象正好是 9 字节的整数，所以当对象其他数据部分（对象实例数据）没有对齐时，就需要通过对 齐填充来补全。</p>
+<h3 id="3-对象的访问方式"><a href="#3-对象的访问方式" class="headerlink" title="3. 对象的访问方式"></a>3. 对象的访问方式</h3><p><strong>直接指针</strong>：如果使用直接指针访问， reference 中存储的直接就是对象地址</p>
+<p><strong>句柄</strong>：如果使用句柄访问的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了 对象实例数据与类型数据各自的具体地址信息。</p>
+<p><strong>两种方式的比较</strong>：<br>        这两种对象访问方式各有优势，使用句柄来访问的最大好处就是 reference 中存储的是稳定的句柄地址，在对象被移动（垃圾收集时移 动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。 </p>
+<p>​        使用直接指针访问方式的最大好处就是速度更快，它节省了一次指针定位的时间开销，由于对象的访问在 Java 中非常频繁，因此这类 开销积少成多后也是一项非常可观的执行成本。 </p>
+<p>​        对 SunHotSpot 而言，它是使用直接指针访问方式进行对象访问的。 </p>
+<h3 id="4-堆内存分配策略"><a href="#4-堆内存分配策略" class="headerlink" title="4. 堆内存分配策略"></a>4. 堆内存分配策略</h3><blockquote>
+<p>新生代：Eden区 + Survivor(from)区 + Survivor(to)区 ；默认比例 8 ：1 ：1 </p>
+<p>老年代：</p>
+<p>注意：设置 Survivor 是为了减少送到老年代的对象 ，设置两个 Survivor 区是为了<strong>解决碎片化</strong>的问题（<strong>复制回收算法</strong>）</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5.png" alt></p>
+</blockquote>
+<h4 id="4-1-对象优先在Eden区分配"><a href="#4-1-对象优先在Eden区分配" class="headerlink" title="4.1 对象优先在Eden区分配"></a>4.1 对象优先在Eden区分配</h4><p>​            大多数情况下，对象在新生代 Eden 区中分配。当 Eden 区没有足够空间分配时，虚拟机将发起一次MinorGC。</p>
+<h4 id="4-2-大对象直接进入老年代"><a href="#4-2-大对象直接进入老年代" class="headerlink" title="4.2 大对象直接进入老年代"></a>4.2 大对象直接进入老年代</h4><p>​            </p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-Xms20m </span><br><span class="line">-Xmx20m </span><br><span class="line">-Xmn10m </span><br><span class="line">-XX:+PrintGCDetails </span><br><span class="line">-XX:PretenureSizeThreshold=4m </span><br><span class="line">-XX:+UseSerialGC</span><br><span class="line">## PretenureSizeThreshold 参数只对 Serial 和 ParNew 两款收集器有效。 超过这个值的时候，对象直接在old区分配内存,默认值为0,即优先在Eden区分配</span><br></pre></td></tr></table></figure>
+
+<p>​            最典型的大对象是那种很长的字符串以及数组。这样做的目的：==1.避免大量内存复制,2.避免提前进行垃圾回收，明明内存有空间进行分配==。</p>
+<h4 id="4-3-长期存活对象进入老年"><a href="#4-3-长期存活对象进入老年" class="headerlink" title="4.3 长期存活对象进入老年"></a>4.3 长期存活对象进入老年</h4><p>​            如果对象在 Eden 出生并经过第一次 MinorGC 后仍然存活，并且能被 Survivor 容纳的话，将被移动到 Survivor 空间中，并将对象年龄设为 1，对象在 Survivor 区中每熬过一次 MinorGC，年龄就增加 1，当它的年龄增加到一定程度(<strong>默认为 15</strong>)_时，就会被晋升到老年代中。</p>
+<h4 id="4-4-对象年龄动态判定"><a href="#4-4-对象年龄动态判定" class="headerlink" title="4.4 对象年龄动态判定"></a>4.4 对象年龄动态判定</h4><p>​            如果在 Survivor 空间中相同年龄所有对象大小的综合大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代</p>
+<h4 id="4-5-空间分配担保"><a href="#4-5-空间分配担保" class="headerlink" title="4.5 空间分配担保"></a>4.5 空间分配担保</h4><p>​            在发生 MinorGC 之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么 MinorGC 可以确保是安全 的。如果不成立，则虚拟机会查看 HandlePromotionFailure 设置值是否允许担保失败。如果允许，那么会继续检查老年代最大可用的连续空间是否大于历 次晋升到老年代对象的平均大小，如果大于，将尝试着进行一次 MinorGC，尽管这次 MinorGC 是有风险的，如果担保失败则会进行一次 FullGC；如果小 于，或者 HandlePromotionFailure 设置不允许冒险，那这时也要改为进行一次 FullGC</p>
+<p>==MinGC：Eden没有足够空间分配给新对象时，触发新生代GC；Eden区中无用对象回收，有用对象进入from/to（Surviver）区,存活年龄+1；存活年龄达到一定次数进入老年代。如果from/to区中的对象使用了超过一半的空间，则可以提前进入老年代==</p>
+<h2 id="三、垃圾回收算法与垃圾回收器"><a href="#三、垃圾回收算法与垃圾回收器" class="headerlink" title="三、垃圾回收算法与垃圾回收器"></a>三、垃圾回收算法与垃圾回收器</h2><h3 id="1-GC判断对象存活"><a href="#1-GC判断对象存活" class="headerlink" title="1. GC判断对象存活"></a>1. GC判断对象存活</h3><p><strong>引用计数法</strong>：<br>        给对象添加一个引用计数器，当对象增加一个引用时计数器加 1，引用失效时计数器减 1。引用计数为 0 的对象可被回收。（Python 在用，但主流虚拟 机没有使用） </p>
+<p>​        优点：快，方便，实现简单。<br>​        缺陷：对象相互引用时（A.instance=B 同时 B.instance=A），很难判断对象是否该回收。</p>
+<p><strong>可达性分析</strong>：<br>        基本思路就是通过一系列的称为“GCRoots”的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为 引用链（ReferenceChain），当一个对象到 GCRoots 没有任何引用链相连时，则证明此对象是不可用的。 </p>
+<p>​        作为 GCRoots 的对象包括下面几种： </p>
+<ul>
+<li>当前虚拟机栈中<strong>局部变量表</strong>中的引用的对象 </li>
+<li>当前本地方法栈中<strong>局部变量表</strong>中的引用的对象 </li>
+<li>方法区中<strong>类静态属性</strong>引用的对象 </li>
+<li>方法区中的<strong>常量</strong>引用的对象</li>
+</ul>
+<h3 id="2-GC（Minor-GC-Full-GC）"><a href="#2-GC（Minor-GC-Full-GC）" class="headerlink" title="2. GC（Minor GC / Full GC）"></a>2. GC（Minor GC / Full GC）</h3><h3 id="3-GC算法"><a href="#3-GC算法" class="headerlink" title="3. GC算法"></a>3. GC算法</h3><p>​        <strong>复制算法</strong>：from/to 区 使用此算法<br>​                优点<br>​                        简单高效，不会出现内存碎片问题<br>​                缺点<br>​                        ==内存利用率低，只有一半==<br>​                        存活对象较多时效率明显会降低</p>
+<p>​        <strong>标记-清除算法</strong>：</p>
+<p>​                优点<br>​                        利用率百分之百<br>​                缺点<br>​                        标记和清除的效率都不高（比对复制算法）<br>​                        会产生==大量的不连续的内存碎片==</p>
+<p>​        <strong>标记-整理算法</strong>：</p>
+<p>​                优点<br>​                        利用率百分之百<br>​                        ==没有内存碎片==<br>​                缺点<br>​                        标记和清除的==效率都不高==<br>​                        效率相对标记-清除要低</p>
+<h3 id="4-垃圾回收器"><a href="#4-垃圾回收器" class="headerlink" title="4. 垃圾回收器"></a>4. 垃圾回收器</h3><blockquote>
+<p>根据各个年代的特点选取不同的垃圾收集算法 </p>
+<p>新生代使用复制算法<br>老年代使用标记-整理或者标记-清除算法</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">jps -v  ## 显示当前使用的垃圾回收器</span><br></pre></td></tr></table></figure>
+
+<p>在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。 </p>
+<p>而老年代中因为对象存活率高、没有额外空间对它进行分配担保，就必须使用“标记—清理”或者“标记—整理”算法来进行回收。 </p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8.png" alt></p>
+<p>并行：垃圾收集的多线程的同时进行。 (垃圾回收多线程)</p>
+<p>并发：垃圾收集的多线程和<strong>应用的多线程</strong>同时进行。</p>
+<p>单线程收集</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%94%B6%E9%9B%86.png" alt></p>
+<p>多线程收集</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%94%B6%E9%9B%86.png" alt></p>
+<p>CMS收集器：标记清除  并行+并发</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/CMS%E6%94%B6%E9%9B%86.png" alt></p>
+<p>G1:标记整理+复制算法（划分多个同样的小区域）   并行+并发</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/G1%E6%94%B6%E9%9B%86.png" alt></p>
+<h2 id="四、-JVM执行子程序"><a href="#四、-JVM执行子程序" class="headerlink" title="四、 JVM执行子程序"></a>四、 JVM执行子程序</h2><h2 id="五、编写高效优雅的JAVA程序"><a href="#五、编写高效优雅的JAVA程序" class="headerlink" title="五、编写高效优雅的JAVA程序"></a>五、编写高效优雅的JAVA程序</h2>
+    </div>
+
+    
+
+
+<div>
+  
+    <div>
+    
+	<br /> <br /> <br />
+	<div style="text-align:center;color: #678;font-size:18px;">======================</div>
+        <div style="text-align:center;color: #678;font-size:18px;">全 文 结 束&ensp;&ensp;<i class="fa fa-leanpub"></i>&ensp;&ensp;感 谢 阅 读</div>
+	<div style="text-align:center;color: #678;font-size:18px;">======================</div>
+    
+</div>
+  
+</div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haifeng Cao 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Haifeng Cao 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Haifeng Cao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.caohaifeng.site/2019/11/27/JVM/" title="JVM">https://www.caohaifeng.site/2019/11/27/JVM/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9udWxs"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/G1/" rel="tag"><i class="fa fa-tag"></i> G1</a>
+              <a href="/tags/CMS/" rel="tag"><i class="fa fa-tag"></i> CMS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" rel="next" title="搭建hexo博客">
+                  <i class="fa fa-chevron-left"></i> 搭建hexo博客
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments" id="gitalk-container"></div>
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="comments"></div>
+            </div>
+        </div>
+      </div>
+      <script>
+        window.addEventListener('tabs:register', () => {
+          let activeClass = 'gitalk';
+          if (activeClass) {
+            let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+            if (activeTab) {
+              activeTab.click();
+            }
+          }
+        });
+      </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM"><span class="nav-number">1.</span> <span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、内存结构"><span class="nav-number">1.1.</span> <span class="nav-text">一、内存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-程序计数器"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 程序计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-虚拟机栈-java栈"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 虚拟机栈 / java栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-本地方法栈"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 本地方法栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-方法区（JDK-V1-7-永久代、JDK-V1-8-元空间）"><span class="nav-number">1.1.4.</span> <span class="nav-text">4. 方法区（JDK_V1.7 永久代、JDK_V1.8 元空间）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Java堆"><span class="nav-number">1.1.5.</span> <span class="nav-text">5. Java堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-运行时常量池"><span class="nav-number">1.1.6.</span> <span class="nav-text">6. 运行时常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-直接内存"><span class="nav-number">1.1.7.</span> <span class="nav-text">7. 直接内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-常用命令"><span class="nav-number">1.1.8.</span> <span class="nav-text">8. 常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、-JVM中的对象"><span class="nav-number">1.2.</span> <span class="nav-text">二、 JVM中的对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-对象的分配"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 对象的分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-检查加载"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">1.1 检查加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-分配内存"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">1.2 分配内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-内存空间初始化"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">1.3 内存空间初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-设置"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">1.4 设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-对象初始化"><span class="nav-number">1.2.1.5.</span> <span class="nav-text">1.5 对象初始化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-对象的内存布局"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 对象的内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-对象的访问方式"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 对象的访问方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-堆内存分配策略"><span class="nav-number">1.2.4.</span> <span class="nav-text">4. 堆内存分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-对象优先在Eden区分配"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">4.1 对象优先在Eden区分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-大对象直接进入老年代"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">4.2 大对象直接进入老年代</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-长期存活对象进入老年"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">4.3 长期存活对象进入老年</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-对象年龄动态判定"><span class="nav-number">1.2.4.4.</span> <span class="nav-text">4.4 对象年龄动态判定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-空间分配担保"><span class="nav-number">1.2.4.5.</span> <span class="nav-text">4.5 空间分配担保</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、垃圾回收算法与垃圾回收器"><span class="nav-number">1.3.</span> <span class="nav-text">三、垃圾回收算法与垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-GC判断对象存活"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. GC判断对象存活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-GC（Minor-GC-Full-GC）"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. GC（Minor GC / Full GC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-GC算法"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. GC算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-垃圾回收器"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 垃圾回收器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、-JVM执行子程序"><span class="nav-number">1.4.</span> <span class="nav-text">四、 JVM执行子程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、编写高效优雅的JAVA程序"><span class="nav-number">1.5.</span> <span class="nav-text">五、编写高效优雅的JAVA程序</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haifeng Cao"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Haifeng Cao</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="chat motion-element"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hevolf"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmNhb2hhaWZlbmd4QDE2My5jb20=" title="E-Mail → mailto:caohaifengx@163.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly93ZWliby5jb20veW91cm5hbWU=" title="微博 → https:&#x2F;&#x2F;weibo.com&#x2F;yourname"><i class="fa fa-fw fa-weibo"></i>微博</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="https:&#x2F;&#x2F;github.com&#x2F;hevolf">GitHub</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFpZHUuY29t" title="https:&#x2F;&#x2F;www.baidu.com">百度</span>
+        </li>
+    </ul>
+  </div>
+<!-- CloudCalendar -->
+<div class="widget-wrap" style="width: 90%;margin-left: auto;margin-right: auto; opacity: 0.97;">
+	<div class="widget" id="CloudCalendar"></div>
+</div>
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haifeng Cao</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">22k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20 分钟</span>
+</div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dd7eec81a2121ca" async="async"></script>
+  </div>
+
+        
+
+
+
+
+
+
+  <script>
+  function leancloudSelector(url) {
+    return document.getElementById(url).querySelector('.leancloud-visitors-count');
+  }
+  if (CONFIG.page.isPost) {
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = visitors.getAttribute('id').trim();
+      var title = visitors.getAttribute('data-flag-title').trim();
+
+      Counter('get', `/classes/Counter?where=${JSON.stringify({ url })}`)
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+              leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .then(response => response.json())
+              .catch(error => {
+                console.log('Failed to save visitor count', error);
+              })
+          } else {
+              Counter('post', '/classes/Counter', { title: title, url: url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.log('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.log('LeanCloud Counter Error', error);
+        });
+    }
+  } else {
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return element.getAttribute('id').trim();
+      });
+
+      Counter('get', `/classes/Counter?where=${JSON.stringify({ url: { '$in': entries } })}`)
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length === 0) {
+            document.querySelectorAll('.leancloud_visitors .leancloud-visitors-count').forEach(element => {
+              element.innerText = 0;
+            });
+            return;
+          }
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.url;
+            var time = item.time;
+            leancloudSelector(url).innerText = time;
+          }
+          for (var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = leancloudSelector(url);
+            if (element.innerText == '') {
+              element.innerText = 0;
+            }
+          }
+        })
+        .catch(error => {
+          console.log('LeanCloud Counter Error', error);
+        });
+    }
+  }
+
+  fetch('https://app-router.leancloud.cn/2/route?appId=932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz')
+    .then(response => response.json())
+    .then(({ api_server }) => {
+      var Counter = (method, url, data) => {
+        return fetch(`https://${api_server}/1.1${url}`, {
+          method: method,
+          headers: {
+            'X-LC-Id': '932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz',
+            'X-LC-Key': 'qhb4dhObEw9qngzRpoxXrtEw',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        const localhost = /http:\/\/(localhost|127.0.0.1|0.0.0.0)/;
+        if (localhost.test(document.URL)) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '0672eb3ee58faee4935d',
+      clientSecret: '2de10f83bc44b7d86db607b2a3db41d6b845d59f',
+      repo: 'itheone_gitalk',
+      owner: 'hevolf',
+      admin: ['hevolf'],
+      id: 'e72ec499a26909089a34a762a71cafaa',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+<!-- calendar widget -->
+
+    <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-calendar/calendar.min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-calendar/languages.min.js"></script>
+    <script>
+    $(function() {
+        $('#CloudCalendar').aCalendar('zh-CN',
+            $.extend(
+                '', {
+                    single:true,
+                    root:'/calendar/'
+                }
+            )
+        );
+    });
+    </script>
+
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz',
+    appKey: 'qhb4dhObEw9qngzRpoxXrtEw',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname,
+    recordIP: false,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>
