@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="itheone" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: true,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"default"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Velocity模板引擎  velocity已经6年没更新，sping4.3开始不再支持velocity，推荐使用FreeMarker或者Thymeleaf。  变量$1234$name 		# 为空时打印变量本身。$!name 		# 为空时打印空字符串（不打印任何内容）。$&amp;#123;name&amp;#125;		# 类似 &#96;$name&#96;，为空时原样打印。但可以将变量和连续的字符串分隔，例如：$&amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="velocity">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.caohaifeng.site&#x2F;2019&#x2F;12&#x2F;11&#x2F;velocity&#x2F;index.html">
+<meta property="og:site_name" content="itheone">
+<meta property="og:description" content="Velocity模板引擎  velocity已经6年没更新，sping4.3开始不再支持velocity，推荐使用FreeMarker或者Thymeleaf。  变量$1234$name 		# 为空时打印变量本身。$!name 		# 为空时打印空字符串（不打印任何内容）。$&amp;#123;name&amp;#125;		# 类似 &#96;$name&#96;，为空时原样打印。但可以将变量和连续的字符串分隔，例如：$&amp;#">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-11T11:00:09.443Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.caohaifeng.site/2019/12/11/velocity/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>velocity | itheone</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">itheone</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">H</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-fw fa-heartbeat"></i>公益 404</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+
+
+  
+  
+  
+    <div class="bottom-divider">
+      <style>
+        .bottom-divider {
+          display: table;
+          padding-bottom: 10px;
+          margin-bottom: 50px;
+          width: 100%;
+          border-bottom: 1px solid #eee;
+        }
+      </style>
+      <div class="post-nav-next post-nav-item">
+        
+          <a href="/2019/12/11/Java%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" rel="next" title="java每日一题">
+            <i class="fa fa-chevron-left"></i> java每日一题
+          </a>
+        
+      </div>
+
+      <span class="post-nav-divider"></span>
+
+      <div class="post-nav-prev post-nav-item">
+        
+      </div>
+    </div>
+  
+
+  
+  
+  
+  
+    
+  
+    <link itemprop="mainEntityOfPage" href="https://www.caohaifeng.site/2019/12/11/velocity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Haifeng Cao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="itheone">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          velocity
+        </h1>
+
+        <div class="post-meta">
+
+			
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-12-11 19:27:20 / 修改时间：19:00:09" itemprop="dateCreated datePublished" datetime="2019-12-11T19:27:20+08:00">2019-12-11</time>
+            </span>
+
+          
+            <span id="/2019/12/11/velocity/" class="post-meta-item leancloud_visitors" data-flag-title="velocity" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/11/velocity/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/11/velocity/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Velocity模板引擎"><a href="#Velocity模板引擎" class="headerlink" title="Velocity模板引擎"></a>Velocity模板引擎</h1><blockquote>
+<p> velocity已经6年没更新，sping4.3开始不再支持velocity，推荐使用FreeMarker或者Thymeleaf。 </p>
+</blockquote><h2 id="变量"><a href="#变量" class="headerlink" title="变量$"></a>变量$</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$name 		# 为空时打印变量本身。</span><br><span class="line">$!name 		# 为空时打印空字符串（不打印任何内容）。</span><br><span class="line">$&#123;name&#125;		# 类似 `$name`，为空时原样打印。但可以将变量和连续的字符串分隔，例如：$&#123;name&#125;space</span><br><span class="line">$!&#123;name&#125; 	# 类似$!name，为空时打印空字符串，但可以将变量和连续的字符串分隔。例如：$!&#123;name&#125;space</span><br></pre></td></tr></table></figure><a id="more"></a>
+
+
+<p>示例： <code>$name $!name ${name} $!{name}</code><br>name为空时打印： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"$name" "" "$&#123;name&#125;" ""</span><br></pre></td></tr></table></figure>
+
+<p>带花括号的属性/方法调用方式，属性/方法需要在花括号之内：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$&#123;cookie.name&#125;</span><br><span class="line">$&#123;request.getCookies()&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>#set()</code> 中，赋值符号左边的变量名不能加感叹号。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#set($idx = 0)</span><br><span class="line">#foreach($!item in $!list)</span><br><span class="line">    #set($idx = $!idx + 1)</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<p>注：jQuery 的 <code>$.ajax()</code> 之类的代码会导致 Velocity 解析异常，好在 Javascript 语法的灵活性，可以增加无效空白 <code>$ .ajax()</code>，当然也可以使用 <code>jQuery.ajax()</code></p>
+<h2 id="set"><a href="#set" class="headerlink" title="#set()"></a>#set()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#set($list = [&quot;pine&quot;, &quot;oak&quot;, &quot;maple&quot;])</span><br></pre></td></tr></table></figure>
+
+<p><strong>注：</strong> 如果右侧的值为 null，则赋值失败，左侧变量仍==保持原值==。</p>
+<h2 id="if"><a href="#if" class="headerlink" title="#if()"></a>#if()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#if(true)</span><br><span class="line">    TRUE.</span><br><span class="line">#elseif(false)</span><br><span class="line">    FALSE.</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<p>其实不仅仅是变量名可以使用花括号，保留字同样可以使用，这在内联 Velocity 脚本的时候 非常有用。 例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="foreach"><a href="#foreach" class="headerlink" title="#foreach()"></a>#foreach()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#foreach($item in $list)</span><br><span class="line">    $&#123;velocityCount&#125;. $item.</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<h2 id="break"><a href="#break" class="headerlink" title="#break"></a>#break</h2><p>可用于中断 <code>#foreach()</code> 循环。</p>
+<h2 id="parse"><a href="#parse" class="headerlink" title="#parse()"></a>#parse()</h2><p>例如：a.vm 文件中包含如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#parse(&quot;b.vm&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>则在解析 a.vm 页面的这行代码时，先将 b.vm 插入到其所在的位置，并解析执行， 而且 b.vm 可以共享 a.vm 中的变量。</p>
+<p>如果 a.vm <code>#parse(&quot;b.vm&quot;)</code>，b.vm 可以直接使用 a.vm 中定义的变量。<br>注意：如果 b.vm 定义了同名变量，则 b.vm 中使用自身的定义。</p>
+<h2 id="evaluate"><a href="#evaluate" class="headerlink" title="#evaluate()"></a>#evaluate()</h2><p>动态执行一串==字符串==的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#evaluate(&apos;string with VTL #if(true)will be displayed#end&apos;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="include"><a href="#include" class="headerlink" title="#include()"></a>#include()</h2><p>将文件==原文==包含进当前文档中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#include(&quot;a.vm&quot; &quot;readme.txt&quot;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="define"><a href="#define" class="headerlink" title="#define()"></a>#define()</h2><p>类似于 C 语言的 <code>#define</code> 命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#define($hello)</span><br><span class="line">    Hello $&#123;who&#125;!</span><br><span class="line">#end</span><br><span class="line">#set($who = &quot;World&quot;)</span><br><span class="line"></span><br><span class="line">$hello</span><br><span class="line">## 显示 &quot;Hello World!&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="数组-amp-访问"><a href="#数组-amp-访问" class="headerlink" title="数组 &amp; 访问"></a>数组 &amp; 访问</h2><p>Velocity 访问数组对象，无法通过类似 arr[2] 来访问特定位置的元素。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#set($arr = [0, 1, 2, 3])</span><br><span class="line">$arr.get(2)</span><br></pre></td></tr></table></figure>
+
+<p>注：==Velocity 中的数组对应 Java 中的 <strong>List对象</strong>==。对于 Java 原生 Array 对象， 只能够 <code>#foreach</code> 进行遍历，无法使用 <code>$arr[0]</code> 和 <code>$arr.get(0)</code> 方法。</p>
+<h2 id="范围-range"><a href="#范围-range" class="headerlink" title="范围(range)"></a>范围(range)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#foreach($item in [10..20])</span><br><span class="line">    $item</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象-amp-访问"><a href="#对象-amp-访问" class="headerlink" title="对象 &amp; 访问"></a>对象 &amp; 访问</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#set($obj = &#123;&quot;key&quot;:&quot;value&quot;, &quot;name&quot;:&quot;space&quot;&#125;)</span><br><span class="line">$obj.get(&quot;key&quot;)</span><br><span class="line"></span><br><span class="line">### 此处#item还是$item???</span><br><span class="line">#foreach(#item in $obj)</span><br><span class="line">    $item</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<p>上面的 $item 取到的是 values，如果需要在遍历对象过程中，同时取到对象的 keys， 可以使用 <code>entrySet()</code> 或 <code>keySet()</code> 方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#foreach($item in $!obj.entrySet())</span><br><span class="line">    $!item.key : $!item.value</span><br><span class="line">#end</span><br><span class="line"></span><br><span class="line">#foreach($item in $obj.keySet())</span><br><span class="line">    $item : $obj.get($item)</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<p><strong>注：</strong> 这种集合的遍历是无序的，即遍历顺序可能不同于 $obj 中元素的定义顺序 （据目前所知，是根据键的字母排序的）。</p>
+<p>另外有两种不完美解决方法(每个对象只存一组值？)：</p>
+<ol>
+<li><p>I:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#set($obj = [</span><br><span class="line">    &#123;&quot;key&quot;:&quot;key&quot;, &quot;value&quot;:&quot;value&quot;&#125;,</span><br><span class="line">    &#123;&quot;key&quot;:&quot;name&quot;, &quot;value&quot;:&quot;space&quot;&#125;</span><br><span class="line">    ])</span><br><span class="line">#foreach($item in $obj)</span><br><span class="line">    $item.key : $item.value</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>II:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#set($obj = [</span><br><span class="line">    [&quot;key&quot;,&quot;value&quot;],</span><br><span class="line">    [&quot;name&quot;,&quot;space&quot;]</span><br><span class="line">    ])</span><br><span class="line">#foreach($item in $obj)</span><br><span class="line">    $item.get(0) : $item.get(1)</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>之所以说 <strong>不完美</strong> 是因为：对于已知的 key，本可以直接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$obj.get(&quot;key&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>现在只能遍历并进行比较取得，而且较早的 Velocity 版本无法使用 <code>#break</code>， 以便在找到匹配项之后立即退出循环。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#foreach($item in $obj)</span><br><span class="line">    #if(&quot;key&quot; == $!obj.get(0))</span><br><span class="line">        #set($myKey = $!type.get(1))</span><br><span class="line">        ##break</span><br><span class="line">    #end</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<h2 id="macros"><a href="#macros" class="headerlink" title="#macros()"></a>#macros()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#macro(macroName)</span><br><span class="line">    #subMacro(&quot;name&quot;, &quot;value&quot;)</span><br><span class="line">#end</span><br><span class="line"></span><br><span class="line">#macro(subMacro $param1 $param2)</span><br><span class="line">    this is sub macro($param1, $param2).</span><br><span class="line">#end</span><br><span class="line"></span><br><span class="line">### 例子</span><br><span class="line">## 定义 sayHi</span><br><span class="line">#macro(sayHi $name)</span><br><span class="line"> hi $name</span><br><span class="line">#end</span><br><span class="line">## 调用sayHi</span><br><span class="line">#sayHi(&quot;浮点计算会计法&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>注意：如果 a.vm 和 b.vm 都在页面级存在同名，参数数量相同的宏，则后访问的页面 的宏不被加载。</p>
+<p>参考：</p>
+<ol>
+<li><span class="exturl" data-url="aHR0cDovL2hpLmJhaWR1LmNvbS8lQkElREMlQjklQUQlQ0IlRTQlQjUlQzQ4MCVCQSVGMy9ibG9nL2l0ZW0vNWQwYTllODE3ODU3MjNkZmJkM2UxZTdmLmh0bWw=" title="http://hi.baidu.com/%BA%DC%B9%AD%CB%E4%B5%C480%BA%F3/blog/item/5d0a9e81785723dfbd3e1e7f.html">Velocity宏Velocimacros<i class="fa fa-external-link"></i></span></li>
+</ol>
+<h2 id="stop"><a href="#stop" class="headerlink" title="#stop"></a>#stop</h2><p>停止模板引擎，在 Debug 时比较有用。</p>
+<h2 id="条件比较"><a href="#条件比较" class="headerlink" title="条件比较"></a>条件比较</h2><p>在 Velocity 中可以使用大于(&gt;)/小于(&lt;)/等于(==)之类的符号，与编程语言中的意义一致， 不过要注意的是这些符号不能直接接在变量之后，除非变量使用带花括号的表示方式。 例如：<code>if($num&gt;1)</code> 要修改为 <code>if($num &gt; 1)</code> 或 <code>if(${num}&gt;1)</code>。</p>
+<h2 id="转义"><a href="#转义" class="headerlink" title="转义"></a>转义</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$\name</span><br><span class="line">$\&#123;name&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="不解析执行的内容"><a href="#不解析执行的内容" class="headerlink" title="不解析执行的内容"></a>不解析执行的内容</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#[[</span><br><span class="line">    这段内容将不被 Velocity 引擎解析，原文打出。</span><br><span class="line"></span><br><span class="line">    * #define()</span><br><span class="line">    * $&#123;blah</span><br><span class="line"></span><br><span class="line">]]#</span><br></pre></td></tr></table></figure>
+
+<h2 id="内置对象"><a href="#内置对象" class="headerlink" title="内置对象"></a>内置对象</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">### $request, $response, $session</span><br><span class="line">#foreach($cookie in $request.getCookies())</span><br><span class="line">    $cookie.name : $cookie.value</span><br><span class="line">#end</span><br></pre></td></tr></table></figure>
+
+<p>获得 URL 中的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#set($n = $!request.getParameter(&apos;n&apos;))</span><br></pre></td></tr></table></figure>
+
+<p>另外还可以使用 <code>$msg</code> 内的消息工具访问 Struts 的国际化资源。</p>
+<p>参考：</p>
+<ol>
+<li><span class="exturl" data-url="aHR0cDovL2Rvd25sb2FkLm9yYWNsZS5jb20vamF2YWVlLzEuMy9hcGkvamF2YXgvc2VydmxldC9TZXJ2bGV0UmVxdWVzdC5odG1s" title="http://download.oracle.com/javaee/1.3/api/javax/servlet/ServletRequest.html">Interface ServletRequest<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cDovL2Rvd25sb2FkLm9yYWNsZS5jb20vamF2YWVlLzEuNC9hcGkvamF2YXgvc2VydmxldC9odHRwL0h0dHBTZXJ2bGV0UmVxdWVzdC5odG1s" title="http://download.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html">Interface HttpServletRequest<i class="fa fa-external-link"></i></span></li>
+</ol>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">## 单行注释。</span><br><span class="line">#*</span><br><span class="line"> * 多行注释。</span><br><span class="line"> *#</span><br><span class="line"></span><br><span class="line">#**</span><br><span class="line"> * 文档风格的注释。</span><br><span class="line"> * @version 2010/12/27</span><br><span class="line"> *#</span><br></pre></td></tr></table></figure>
+
+<p>据说 vm 页面的末尾写注释，会导致解析异常 (SofaMVC?)。</p>
+<h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>Velocity 在表单中添加 name=”action” 的文本/隐藏域，可以调用对应 Java 类 （submit 按钮的 name 则指定对应的方法名称，如 event_submit_do_save ）， 但是此时 IE 浏览器通过 js 获得 form 元素本身的 action 属性值的方式， 和其他浏览器稍有不同。</p>
+<p>例如对于如下 HTML DOM 结构：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"attr"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">name</span>=<span class="string">"action"</span> <span class="attr">value</span>=<span class="string">"elem"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>IE 中需要使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">form.attributes[&quot;action&quot;].value</span><br></pre></td></tr></table></figure>
+
+<p>非 IE 浏览器还可以使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">form.getAttribute(&quot;action&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>以下是些详细的对照：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// codes                            //  IE          !IE</span><br><span class="line">form.action.value                   // elem         elem</span><br><span class="line">form.getAttribute(&quot;action&quot;)         // [object]     attr</span><br><span class="line">form.getAttribute(&quot;action&quot;).value   // elem         undefined</span><br><span class="line">form.attributes[&quot;action&quot;].value     // attr         attr</span><br></pre></td></tr></table></figure>
+
+<p>Form 本身的 action 属性和 action 隐藏域在提交时，浏览器本身不受影响， action 隐藏域被当作正常的参数附在 Form 的 action 属性值所对应 URL 之后。</p>
+<p>参考资料：<br><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vbWluZ2xpZS9wLzkxMTYwOTAuaHRtbA==" title="https://www.cnblogs.com/minglie/p/9116090.html">springBoot集成velocit<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDQ3MDQ5Ny9hcnRpY2xlL2RldGFpbHMvNzk5NTExNjk=" title="https://blog.csdn.net/weixin_40470497/article/details/79951169">SpringMVC 集成velocity以及介绍velocity的基本使用语法<i class="fa fa-external-link"></i></span></p>
+
+    </div>
+
+    
+
+
+<div>
+  
+    <div>
+    
+	<br /> <br /> <br />
+	<div style="text-align:center;color: #678;font-size:18px;">======================</div>
+        <div style="text-align:center;color: #678;font-size:18px;">全 文 结 束&ensp;&ensp;<i class="fa fa-leanpub"></i>&ensp;&ensp;感 谢 阅 读</div>
+	<div style="text-align:center;color: #678;font-size:18px;">======================</div>
+    
+</div>
+  
+</div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Haifeng Cao 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Haifeng Cao 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Haifeng Cao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://www.caohaifeng.site/2019/12/11/velocity/" title="velocity">https://www.caohaifeng.site/2019/12/11/velocity/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9udWxs"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/12/11/Java%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" rel="next" title="java每日一题">
+                  <i class="fa fa-chevron-left"></i> java每日一题
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments" id="gitalk-container"></div>
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="comments"></div>
+            </div>
+        </div>
+      </div>
+      <script>
+        window.addEventListener('tabs:register', () => {
+          let activeClass = 'gitalk';
+          if (activeClass) {
+            let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+            if (activeTab) {
+              activeTab.click();
+            }
+          }
+        });
+      </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Velocity模板引擎"><span class="nav-number">1.</span> <span class="nav-text">Velocity模板引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#变量"><span class="nav-number">1.1.</span> <span class="nav-text">变量$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">1.2.</span> <span class="nav-text">#set()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#if"><span class="nav-number">1.3.</span> <span class="nav-text">#if()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#foreach"><span class="nav-number">1.4.</span> <span class="nav-text">#foreach()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#break"><span class="nav-number">1.5.</span> <span class="nav-text">#break</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parse"><span class="nav-number">1.6.</span> <span class="nav-text">#parse()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluate"><span class="nav-number">1.7.</span> <span class="nav-text">#evaluate()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#include"><span class="nav-number">1.8.</span> <span class="nav-text">#include()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#define"><span class="nav-number">1.9.</span> <span class="nav-text">#define()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组-amp-访问"><span class="nav-number">1.10.</span> <span class="nav-text">数组 &amp; 访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#范围-range"><span class="nav-number">1.11.</span> <span class="nav-text">范围(range)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象-amp-访问"><span class="nav-number">1.12.</span> <span class="nav-text">对象 &amp; 访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#macros"><span class="nav-number">1.13.</span> <span class="nav-text">#macros()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stop"><span class="nav-number">1.14.</span> <span class="nav-text">#stop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件比较"><span class="nav-number">1.15.</span> <span class="nav-text">条件比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转义"><span class="nav-number">1.16.</span> <span class="nav-text">转义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不解析执行的内容"><span class="nav-number">1.17.</span> <span class="nav-text">不解析执行的内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内置对象"><span class="nav-number">1.18.</span> <span class="nav-text">内置对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注释"><span class="nav-number">1.19.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tips"><span class="nav-number">1.20.</span> <span class="nav-text">Tips</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haifeng Cao"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Haifeng Cao</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="chat motion-element"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hevolf"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmNhb2hhaWZlbmd4QDE2My5jb20=" title="E-Mail → mailto:caohaifengx@163.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly93ZWliby5jb20veW91cm5hbWU=" title="微博 → https:&#x2F;&#x2F;weibo.com&#x2F;yourname"><i class="fa fa-fw fa-weibo"></i>微博</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hldm9sZg==" title="https:&#x2F;&#x2F;github.com&#x2F;hevolf">GitHub</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFpZHUuY29t" title="https:&#x2F;&#x2F;www.baidu.com">百度</span>
+        </li>
+    </ul>
+  </div>
+<!-- CloudCalendar -->
+<div class="widget-wrap" style="width: 90%;margin-left: auto;margin-right: auto; opacity: 0.97;">
+	<div class="widget" id="CloudCalendar"></div>
+</div>
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haifeng Cao</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">55k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">50 分钟</span>
+</div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dd7eec81a2121ca" async="async"></script>
+  </div>
+
+        
+
+
+
+
+
+
+  <script>
+  function leancloudSelector(url) {
+    return document.getElementById(url).querySelector('.leancloud-visitors-count');
+  }
+  if (CONFIG.page.isPost) {
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = visitors.getAttribute('id').trim();
+      var title = visitors.getAttribute('data-flag-title').trim();
+
+      Counter('get', `/classes/Counter?where=${JSON.stringify({ url })}`)
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+              leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .then(response => response.json())
+              .catch(error => {
+                console.log('Failed to save visitor count', error);
+              })
+          } else {
+              Counter('post', '/classes/Counter', { title: title, url: url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.log('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.log('LeanCloud Counter Error', error);
+        });
+    }
+  } else {
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return element.getAttribute('id').trim();
+      });
+
+      Counter('get', `/classes/Counter?where=${JSON.stringify({ url: { '$in': entries } })}`)
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length === 0) {
+            document.querySelectorAll('.leancloud_visitors .leancloud-visitors-count').forEach(element => {
+              element.innerText = 0;
+            });
+            return;
+          }
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.url;
+            var time = item.time;
+            leancloudSelector(url).innerText = time;
+          }
+          for (var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = leancloudSelector(url);
+            if (element.innerText == '') {
+              element.innerText = 0;
+            }
+          }
+        })
+        .catch(error => {
+          console.log('LeanCloud Counter Error', error);
+        });
+    }
+  }
+
+  fetch('https://app-router.leancloud.cn/2/route?appId=932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz')
+    .then(response => response.json())
+    .then(({ api_server }) => {
+      var Counter = (method, url, data) => {
+        return fetch(`https://${api_server}/1.1${url}`, {
+          method: method,
+          headers: {
+            'X-LC-Id': '932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz',
+            'X-LC-Key': 'qhb4dhObEw9qngzRpoxXrtEw',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        const localhost = /http:\/\/(localhost|127.0.0.1|0.0.0.0)/;
+        if (localhost.test(document.URL)) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '0672eb3ee58faee4935d',
+      clientSecret: '2de10f83bc44b7d86db607b2a3db41d6b845d59f',
+      repo: 'itheone_gitalk',
+      owner: 'hevolf',
+      admin: ['hevolf'],
+      id: '2794f1a66e1c3d07d3cea051b7d12d39',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+<!-- calendar widget -->
+
+    <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-calendar/calendar.min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-calendar/languages.min.js"></script>
+    <script>
+    $(function() {
+        $('#CloudCalendar').aCalendar('zh-CN',
+            $.extend(
+                '', {
+                    single:true,
+                    root:'/calendar/'
+                }
+            )
+        );
+    });
+    </script>
+
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '932Lws0WCoOBR1QH1YcClNyO-gzGzoHsz',
+    appKey: 'qhb4dhObEw9qngzRpoxXrtEw',
+    placeholder: "Just go go",
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname,
+    recordIP: false,
+    serverURLs: ''
+  });
+}, window.Valine);
+</script>
+
+</body>
+</html>

@@ -46,17 +46,21 @@
   };
 </script>
 
-  <meta name="description" content="搭建hexo-blog 预安装git、node.js  安装npm 版本号：6.13.1  安装hexo 1234567891011## 安装hexo包npm install hexo-cli -g## 初始化一个项目 blog （未指定则默认当前文件夹）## 从git下载hexo相关文件（默认主题）hexo init blogcd blog## 安装npm install## 启动hexo se">
+  <meta name="description" content="[toc]jenkins安装及使用（centos_7）下载安装 官方网址：https:&#x2F;&#x2F;jenkins.io&#x2F;zh&#x2F;download&#x2F; 123456## 配置仓库和密钥sudo wget -O &#x2F;etc&#x2F;yum.repos.d&#x2F;jenkins.repo https:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat-stable&#x2F;jenkins.reposudo rpm --import https">
 <meta property="og:type" content="article">
-<meta property="og:title" content="搭建hexo博客">
-<meta property="og:url" content="https:&#x2F;&#x2F;www.caohaifeng.site&#x2F;2019&#x2F;11&#x2F;21&#x2F;%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2&#x2F;index.html">
+<meta property="og:title" content="centos7安装jenkins">
+<meta property="og:url" content="https:&#x2F;&#x2F;www.caohaifeng.site&#x2F;2019&#x2F;12&#x2F;11&#x2F;centos7%E5%AE%89%E8%A3%85jenkins&#x2F;index.html">
 <meta property="og:site_name" content="itheone">
-<meta property="og:description" content="搭建hexo-blog 预安装git、node.js  安装npm 版本号：6.13.1  安装hexo 1234567891011## 安装hexo包npm install hexo-cli -g## 初始化一个项目 blog （未指定则默认当前文件夹）## 从git下载hexo相关文件（默认主题）hexo init blogcd blog## 安装npm install## 启动hexo se">
+<meta property="og:description" content="[toc]jenkins安装及使用（centos_7）下载安装 官方网址：https:&#x2F;&#x2F;jenkins.io&#x2F;zh&#x2F;download&#x2F; 123456## 配置仓库和密钥sudo wget -O &#x2F;etc&#x2F;yum.repos.d&#x2F;jenkins.repo https:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat-stable&#x2F;jenkins.reposudo rpm --import https">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-21T12:37:06.147Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;jenkins%E6%9E%84%E5%BB%BAmvn%E6%8A%A5%E9%94%99.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E8%AE%BF%E9%97%AE%E9%99%90%E5%88%B6.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;tomcat%E5%BC%80%E5%90%AF%E7%94%A8%E6%88%B7.png">
+<meta property="og:updated_time" content="2019-12-11T09:03:57.998Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hevolf&#x2F;itheone_resource_images&#x2F;master&#x2F;img&#x2F;jenkins%E6%9E%84%E5%BB%BAmvn%E6%8A%A5%E9%94%99.png">
 
-<link rel="canonical" href="https://www.caohaifeng.site/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/">
+<link rel="canonical" href="https://www.caohaifeng.site/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/">
 
 
 <script id="page-configurations">
@@ -70,7 +74,7 @@
   };
 </script>
 
-  <title>搭建hexo博客 | itheone</title>
+  <title>centos7安装jenkins | itheone</title>
   
 
 
@@ -214,8 +218,8 @@
       </style>
       <div class="post-nav-next post-nav-item">
         
-          <a href="/2019/11/21/hello-hexo/" rel="next" title="Hello hexo">
-            <i class="fa fa-chevron-left"></i> Hello hexo
+          <a href="/2019/11/27/JVM/" rel="next" title="JVM">
+            <i class="fa fa-chevron-left"></i> JVM
           </a>
         
       </div>
@@ -224,8 +228,8 @@
 
       <div class="post-nav-prev post-nav-item">
         
-          <a href="/2019/11/27/JVM/" rel="prev" title="JVM">
-            JVM <i class="fa fa-chevron-right"></i>
+          <a href="/2019/12/11/Java%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" rel="prev" title="java每日一题">
+            java每日一题 <i class="fa fa-chevron-right"></i>
           </a>
         
       </div>
@@ -238,7 +242,7 @@
   
     
   
-    <link itemprop="mainEntityOfPage" href="https://www.caohaifeng.site/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/">
+    <link itemprop="mainEntityOfPage" href="https://www.caohaifeng.site/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -251,7 +255,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          搭建hexo博客
+          centos7安装jenkins
         </h1>
 
         <div class="post-meta">
@@ -264,11 +268,11 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-21 22:39:31 / 修改时间：20:37:06" itemprop="dateCreated datePublished" datetime="2019-11-21T22:39:31+08:00">2019-11-21</time>
+              <time title="创建时间：2019-12-11 19:27:20 / 修改时间：17:03:57" itemprop="dateCreated datePublished" datetime="2019-12-11T19:27:20+08:00">2019-12-11</time>
             </span>
 
           
-            <span id="/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" class="post-meta-item leancloud_visitors" data-flag-title="搭建hexo博客" title="阅读次数">
+            <span id="/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/" class="post-meta-item leancloud_visitors" data-flag-title="centos7安装jenkins" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -283,8 +287,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" itemprop="commentCount"></span>
+    <a title="valine" href="/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -294,14 +298,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>346</span>
+              <span>3.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -313,21 +317,82 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="搭建hexo-blog"><a href="#搭建hexo-blog" class="headerlink" title="搭建hexo-blog"></a>搭建hexo-blog</h1><ol>
-<li><p>预安装git、node.js</p>
+        <p>[toc]</p><h1 id="jenkins安装及使用（centos-7）"><a href="#jenkins安装及使用（centos-7）" class="headerlink" title="jenkins安装及使用（centos_7）"></a>jenkins安装及使用（centos_7）</h1><h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><ol>
+<li>官方网址：<span class="exturl" data-url="aHR0cHM6Ly9qZW5raW5zLmlvL3poL2Rvd25sb2FkLw==" title="https://jenkins.io/zh/download/">https://jenkins.io/zh/download/<i class="fa fa-external-link"></i></span></li>
+</ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 配置仓库和密钥</span></span></span><br><span class="line">sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo</span><br><span class="line">sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装（速度慢）</span></span><br><span class="line">yum install jenkins</span><br></pre></td></tr></table></figure><a id="more"></a>
+
+
+<ol start="2">
+<li>yum方式安装比较慢 最好直接下载rpm文件再安装</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 安装rpm文件</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> rpm -ivh jenkins-2.190.3-1.1.noarch.rpm </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 启动暂停</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo service jenkins start/stop/restart</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> systemctl start/stop/restart jenkins</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 开机启动</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo chkconfig jenkins on</span></span><br></pre></td></tr></table></figure>
+<h2 id="启动报错"><a href="#启动报错" class="headerlink" title="启动报错"></a>启动报错</h2><ol>
+<li>启动报错<br><code>service jenkins start</code></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Starting jenkins (via systemctl):  Job for jenkins.service failed because the control process exited with error code. See "systemctl status jenkins.service" and "journalctl -xe" for details.</span><br><span class="line">                                                           [FAILED]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 查看报错信息 /usr/bin/java命令找不到,java环境变量路径不对</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> systemctl status jenkins.service</span></span><br><span class="line"></span><br><span class="line">Dec 09 09:36:18 localhost.localdomainA jenkins[7311]: Starting Jenkins bash: /usr/bin/java: No such file or directory</span><br><span class="line">Dec 09 09:36:18 localhost.localdomainA jenkins[7311]: [FAILED]</span><br><span class="line">Dec 09 09:36:18 localhost.localdomainA systemd[1]: Failed to start LSB: Jenkins Automation Server.</span><br><span class="line">Dec 09 09:36:18 localhost.localdomainA systemd[1]: jenkins.service failed.</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 解决方案：创建软连接</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ln -s /usr/<span class="built_in">local</span>/src/jdk1.8.0_201/bin/java /usr/bin/java</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 重新启动成功</span></span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><p>浏览器重启jenkins：<br><span class="exturl" data-url="aHR0cDovLzE5Mi4xNjguNjguMTA6MTgwODAvcmVzdGFydA==" title="http://192.168.68.10:18080/restart">http://192.168.68.10:18080/restart<i class="fa fa-external-link"></i></span><br><span class="exturl" data-url="aHR0cDovLzE5Mi4xNjguNjguMTA6MTgwODAvcmVsb2Fk" title="http://192.168.68.10:18080/reload">http://192.168.68.10:18080/reload<i class="fa fa-external-link"></i></span></p>
 </li>
-<li><p>安装npm 版本号：6.13.1</p>
-</li>
-<li><p>安装hexo</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 安装hexo包</span></span></span><br><span class="line">npm install hexo-cli -g</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 初始化一个项目 blog （未指定则默认当前文件夹）</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 从git下载hexo相关文件（默认主题）</span></span></span><br><span class="line">hexo init blog</span><br><span class="line">cd blog</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 安装</span></span></span><br><span class="line">npm install</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 启动</span></span></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>按需新建页面</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 在hexo站点根目录下，新建栏目</span></span><br><span class="line"><span class="comment">## 将会新建&#123;root&#125;/source/tags/index.md</span></span><br><span class="line">hexo new page tags</span><br><span class="line">hexo new page about</span><br><span class="line">hexo new page categories</span><br><span class="line">hexo new page archives</span><br><span class="line">hexo new page schedule</span><br></pre></td></tr></table></figure>
+<li><p>登录jenkins<br>管理员初始密码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat /var/lib/jenkins/secrets/initialAdminPassword</span></span><br></pre></td></tr></table></figure>
 
 
 
 </li>
 </ol>
+<h2 id="相关参数"><a href="#相关参数" class="headerlink" title="相关参数"></a>相关参数</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 查看Jenkins安装的文件</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> rpm -ql jenkins</span></span><br><span class="line"></span><br><span class="line">/etc/init.d/jenkins</span><br><span class="line">/etc/logrotate.d/jenkins</span><br><span class="line">/etc/sysconfig/jenkins</span><br><span class="line">/usr/lib/jenkins</span><br><span class="line">/usr/lib/jenkins/jenkins.war</span><br><span class="line">/usr/sbin/rcjenkins</span><br><span class="line">/var/cache/jenkins</span><br><span class="line">/var/lib/jenkins</span><br><span class="line">/var/log/jenkins</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 初始密码</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> cat /var/lib/jenkins/secrets/initialAdminPassword</span></span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li><code>/usr/lib/jenkins/</code>：jenkins安装目录，war包会放在这里。</li>
+<li><code>/etc/sysconfig/jenkins</code>：jenkins配置文件，<strong>端口</strong>，<strong>JENKINS_HOME</strong>等都可以在这里配置。</li>
+<li><code>/var/lib/jenkins/</code>：默认的JENKINS_HOME, 默认的<strong>workspace</strong>也在此目录下。</li>
+<li><code>/var/log/jenkins/jenkins.log</code>：jenkins日志文件。</li>
+<li><code>/var/lib/jenkins/secrets/initialAdminPassword</code>：第一次登录初始密码</li>
+</ul>
+<h2 id="插件管理"><a href="#插件管理" class="headerlink" title="插件管理"></a>插件管理</h2><ol>
+<li><p>镜像<br>默认镜像：<span class="exturl" data-url="aHR0cHM6Ly91cGRhdGVzLmplbmtpbnMuaW8vdXBkYXRlLWNlbnRlci5qc29u" title="https://updates.jenkins.io/update-center.json">https://updates.jenkins.io/update-center.json<i class="fa fa-external-link"></i></span><br>清华镜像：<span class="exturl" data-url="aHR0cHM6Ly9taXJyb3JzLnR1bmEudHNpbmdodWEuZWR1LmNuL2plbmtpbnMvdXBkYXRlcy91cGRhdGUtY2VudGVyLmpzb24=" title="https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p>安全矩阵插件：<code>Matrix Authorization Strategy Plugin</code></p>
+</li>
+<li><p>持续集成需要用到的工具：</p>
+<ul>
+<li>git plugin<br><code>This plugin integrates Git with Jenkins</code></li>
+<li>maven integrate<br><code>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</code></li>
+<li>Deploy to container</li>
+</ul>
+</li>
+</ol>
+<h2 id="构建配置"><a href="#构建配置" class="headerlink" title="构建配置"></a>构建配置</h2><ol>
+<li>手动构建</li>
+<li>定时构建</li>
+<li>轮询构建<ul>
+<li>定时</li>
+<li>代码有更新</li>
+</ul>
+</li>
+</ol>
+<h2 id="构建报错"><a href="#构建报错" class="headerlink" title="构建报错"></a>构建报错</h2><p><strong>报错提示：</strong><code>Failed to transfer Could not transfer artifact</code><br><strong>报错原因：</strong>maven安装后，无自定义仓库路径的操作权限导致无法pull pom依赖包（无操作权限）</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/jenkins%E6%9E%84%E5%BB%BAmvn%E6%8A%A5%E9%94%99.png" alt></p>
+<h2 id="自动部署"><a href="#自动部署" class="headerlink" title="自动部署"></a>自动部署</h2><ol>
+<li><p>使用插件Deploy to container<br>如果是在linux上部署Tomcat，需要使用/manger访问，一般需要开放访问限制Tomcat目录/webapps/manager/META-INF/context.xml</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/tomcat%E7%83%AD%E9%83%A8%E7%BD%B2%E8%AE%BF%E9%97%AE%E9%99%90%E5%88%B6.png" alt></p>
+<p>修改Tomcat用户信息：Tomcat目录/conf/tomcat-users.xml</p>
+<p><img src="https://raw.githubusercontent.com/hevolf/itheone_resource_images/master/img/tomcat%E5%BC%80%E5%90%AF%E7%94%A8%E6%88%B7.png" alt></p>
+</li>
+<li><p>使用shell脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="built_in">kill</span> tomcat pid</span></span><br><span class="line"><span class="meta">#</span><span class="bash">这句尤为重要,（防止tomcat进程随 shell命令进程结束而结束）</span></span><br><span class="line">export BUILD_ID=apache-tomcat-app_build_id</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1.关闭tomcat</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> grep -v <span class="string">"grep"</span> 反向筛选，即过滤grep进程</span></span><br><span class="line">pidlist=`ps -ef|grep apache-tomcat-app|grep -v "grep"|awk '&#123;print $2&#125;'`</span><br><span class="line">function stop()&#123;</span><br><span class="line">if [ "$pidlist" == "" ]</span><br><span class="line">  then</span><br><span class="line">    echo "----tomcat 已经关闭----"</span><br><span class="line">    </span><br><span class="line"> else</span><br><span class="line">    echo "tomcat进程号 :$pidlist"</span><br><span class="line">    kill -9 $pidlist</span><br><span class="line">    echo "KILL $pidlist:"</span><br><span class="line">fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop</span><br><span class="line"></span><br><span class="line">pidlist2=`ps -ef|grep apache-tomcat-app|grep -v "grep"|awk '&#123;print $2&#125;'`</span><br><span class="line">if [ "$pidlist2" == "" ]</span><br><span class="line">    then </span><br><span class="line">       echo "----关闭tomcat成功----"</span><br><span class="line">else</span><br><span class="line">    echo "----关闭tomcat失败----"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2.移除原来tomcat中webapps中的项目文件夹</span></span><br><span class="line">rm -rf /home/king/apache-tomcat-app/webapps/ROOT*</span><br><span class="line"><span class="meta">#</span><span class="bash"> 3.复制jenkins生成的war包到tomcat中webapps中</span></span><br><span class="line">cp -r /home/king/.jenkins/workspace/enjoy-king/target/enjoy-git-1.0.war  /home/king/apache-tomcat-app/webapps</span><br><span class="line">sleep 3s</span><br><span class="line"><span class="meta">#</span><span class="bash"> 4.修改war包的名称（不需使用项目名即可访问）</span></span><br><span class="line">mv /home/king/apache-tomcat-app/webapps/enjoy-git-1.0.war  /home/king/apache-tomcat-app/webapps/ROOT.war</span><br><span class="line"><span class="meta">#</span><span class="bash"> 5.启动tomcat</span></span><br><span class="line">cd /home/king/apache-tomcat-app/bin</span><br><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="3">
+<li>远程部署<br>安装ssh插件</li>
+</ol>
+
     </div>
 
     
@@ -378,7 +443,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://www.caohaifeng.site/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" title="搭建hexo博客">https://www.caohaifeng.site/2019/11/21/%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/</a>
+    <a href="https://www.caohaifeng.site/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/" title="centos7安装jenkins">https://www.caohaifeng.site/2019/12/11/centos7%E5%AE%89%E8%A3%85jenkins/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9udWxs"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！
@@ -393,16 +458,16 @@
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/11/21/hello-hexo/" rel="next" title="Hello hexo">
-                  <i class="fa fa-chevron-left"></i> Hello hexo
+                <a href="/2019/11/27/JVM/" rel="next" title="JVM">
+                  <i class="fa fa-chevron-left"></i> JVM
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/27/JVM/" rel="prev" title="JVM">
-                  JVM <i class="fa fa-chevron-right"></i>
+                <a href="/2019/12/11/Java%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" rel="prev" title="java每日一题">
+                  java每日一题 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -467,7 +532,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#搭建hexo-blog"><span class="nav-number">1.</span> <span class="nav-text">搭建hexo-blog</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#jenkins安装及使用（centos-7）"><span class="nav-number">1.</span> <span class="nav-text">jenkins安装及使用（centos_7）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载安装"><span class="nav-number">1.1.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动报错"><span class="nav-number">1.2.</span> <span class="nav-text">启动报错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关参数"><span class="nav-number">1.3.</span> <span class="nav-text">相关参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件管理"><span class="nav-number">1.4.</span> <span class="nav-text">插件管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建配置"><span class="nav-number">1.5.</span> <span class="nav-text">构建配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建报错"><span class="nav-number">1.6.</span> <span class="nav-text">构建报错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动部署"><span class="nav-number">1.7.</span> <span class="nav-text">自动部署</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -483,7 +548,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -496,7 +561,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -567,12 +632,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">22k</span>
+    <span title="站点总字数">55k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">20 分钟</span>
+    <span title="站点阅读时长">50 分钟</span>
 </div>
   <div class="addthis_inline_share_toolbox">
     <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5dd7eec81a2121ca" async="async"></script>
@@ -743,7 +808,7 @@
       repo: 'itheone_gitalk',
       owner: 'hevolf',
       admin: ['hevolf'],
-      id: '7210ffdff3ec1c2a09eb28c8c737f1bd',
+      id: 'cf410c6c4cea8189e20f4831f46a10cc',
         language: 'zh-CN',
       distractionFreeMode: 'true'
     });
